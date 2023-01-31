@@ -1,0 +1,4 @@
+<form (ngSubmit)="onSubmit()" *ngIf="control">
+    <input [formControl]="control" placeholder="search in table">
+</form>
+<button (click)="add()">add</button>

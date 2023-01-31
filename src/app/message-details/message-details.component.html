@@ -1,0 +1,23 @@
+<div *ngIf="isSelected">
+    <ng-container *ngIf="message">
+        <ng-container *ngFor="let col of tableColumns">
+            <ng-container *ngIf="col.visible">
+                <h2>
+                    {{col.label}}
+                </h2>
+                <ng-container [ngSwitch]="col.key">
+                    <p *ngSwitchCase="'datetime'">{{message[col.key] | datatime}}</p>
+                    <p *ngSwitchDefault>{{message[col.key]}}</p>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+        <button (click)="edit(message.id)">Изменить сообщение</button>
+    </ng-container>
+    <ng-container *ngIf="!message">
+        <p>Загружаем сообщение...</p>
+    </ng-container>
+</div>
+<ng-container *ngIf="!isSelected">
+    <h2>Сообщение не выбрано</h2>
+    <p>Выберите сообщение в таблице для просмотра деталей.</p>
+</ng-container>

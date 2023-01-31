@@ -1,0 +1,4 @@
+<ng-container [ngSwitch]="type">
+    <p *ngSwitchCase="'datetime'">{{content | datatime}}</p>
+    <p *ngSwitchDefault [innerHTML]="content"></p>
+</ng-container>

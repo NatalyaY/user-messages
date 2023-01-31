@@ -1,0 +1,5 @@
+<section style="display: flex; gap: 28px; align-items: center; justify-content: center;">
+    <p *ngFor="let item of pagination" (click)="item.params._page != '...' ? changePage(item.params) : null" [class]="item.active ? 'currentPage' : ''">
+        {{item.params._page}}
+    </p>
+</section>

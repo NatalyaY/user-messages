@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+.selected {
+    background-color: yellow;
+
+    & td {
+        background-color: inherit !important;
+        color: black !important;
+    }
+}
+
+td {
+    padding: 15px;
+}
+
+.highlight {
+    background-color: red;
+}
+
+.currentPage {
+    background-color: red;
+}
