@@ -1,0 +1,27 @@
+<table style="border-spacing: 0px;">
+    <thead>
+        <tr>
+            <th>
+            </th>
+            <th *ngFor="let col of tableColumns; trackBy: trackByItems; let i = index">
+                {{col.label}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngIf="!tableLoading">
+            <tr *ngFor="let message of messages; trackBy: trackByMessages; let i = index" (click)="show(message)"
+                [class]="selectedId == message.id ? 'selected' : ''">
+                <td>
+                    <i class="material-icons" (click)="remove($event, message.id)">delete</i>
+                </td>
+                <td *ngFor="let col of tableColumns; trackBy: trackByItems" #ref>
+                    {{saveCellData(message[col.key],col.key, ref)}}
+                </td>
+            </tr>
+        </ng-container>
+        <ng-container *ngIf="tableLoading">
+            <p>Загружаем данные...</p>
+        </ng-container>
+    </tbody>
+</table>

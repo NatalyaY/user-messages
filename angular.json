@@ -68,7 +68,8 @@
               "browserTarget": "user-messages:build:production"
             },
             "development": {
-              "browserTarget": "user-messages:build:development"
+              "browserTarget": "user-messages:build:development",
+              "proxyConfig": "src/proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

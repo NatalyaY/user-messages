@@ -1,0 +1,20 @@
+<div *ngIf="isSelected">
+    <ng-container *ngIf="message">
+        <h2>ID сообщения</h2>
+        <p>{{message.id}}</p>
+        <h2>Ник пользователя</h2>
+        <p>{{message.username}}</p>
+        <h2>Дата сообщения</h2>
+        <p>{{message.datetime}}</p>
+        <h2>Сообщение</h2>
+        <p>{{message.message}}</p>
+        <button (click)="edit(message.id)">Изменить сообщение</button>
+    </ng-container>
+    <ng-container *ngIf="!message">
+        <p>Загружаем сообщение...</p>
+    </ng-container>
+</div>
+<ng-container *ngIf="!isSelected">
+    <h2>Сообщение не выбрано</h2>
+    <p>Выберите сообщение в таблице для просмотра деталей.</p>
+</ng-container>
