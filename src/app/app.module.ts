@@ -12,6 +12,10 @@ import { MessageTableCellComponent } from './message-table-cell/message-table-ce
 import { MainComponent } from './main/main.component';
 import { MessageTablePaginationComponent } from './message-table-pagination/message-table-pagination.component';
 import { DatatimePipe } from './datatime.pipe';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { EditModalComponent } from './edit-modal/edit-modal.component';
+import { AddModalComponent } from './add-modal/add-modal.component';
+import { RemoveModalComponent } from './remove-modal/remove-modal.component';
 
 @NgModule({
     declarations: [
@@ -23,6 +27,9 @@ import { DatatimePipe } from './datatime.pipe';
         MainComponent,
         MessageTablePaginationComponent,
         DatatimePipe,
+        EditModalComponent,
+        AddModalComponent,
+        RemoveModalComponent,
     ],
     imports: [
         BrowserModule,
@@ -30,6 +37,7 @@ import { DatatimePipe } from './datatime.pipe';
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
+        NgbModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

@@ -24,12 +24,15 @@ export class MessageTableCellComponent implements OnInit {
             this.content = this.data;
         }
         this.route.queryParams.subscribe(params => {
-            if (typeof this.content == 'number' || !params['q']) return;
+            if (typeof this.content == 'number') return;
             const q = params['q'];
-            this.content = this.content.replace(
-                new RegExp(q, 'gi'),
-                (match: string) => '<span class="highlight">' + match + '</span>'
-            );
+            this.content = this.content
+                .replaceAll('<span class="highlight">', '')
+                .replaceAll('</span>', '')
+                .replace(
+                    new RegExp(q, 'gi'),
+                    (match: string) => '<span class="highlight">' + match + '</span>'
+                );
         });
     }
 

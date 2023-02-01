@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Subject, Subscription, tap } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 export interface Message {
     id: number,
@@ -87,6 +87,7 @@ export class RestService {
     constructor(
         private http: HttpClient,
         private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     getActualMessages = () => {
@@ -129,7 +130,20 @@ export class RestService {
             url += `&q=${q}`;
         }
         return this.http.get<Message[]>(url, { observe: 'response' }).pipe(
-            tap(data => this.setMessagesAndPagination(data, _page, _limit))
+            tap(data => {
+                if (!data.body?.length && _page) {
+                    this.router
+                        .navigate(
+                            [],
+                            {
+                                relativeTo: this.route,
+                                queryParams: { _page: undefined },
+                                queryParamsHandling: 'merge',
+                            }).then(() => this.getMessages().subscribe());
+                } else {
+                    this.setMessagesAndPagination(data, _page, _limit);
+                }
+            })
         );
     }
 

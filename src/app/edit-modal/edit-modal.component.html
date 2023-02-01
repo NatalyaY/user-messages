@@ -1,0 +1,7 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!submitted">
+    <label for="message">Текст сообщения</label>
+    <textarea name="message" id="message" formControlName="message"></textarea>
+    <button class="button" type="submit" [disabled]="form.invalid || form.pristine">{{submitting ? 'Обновляем данные...' : 'Сохранить'}}</button>
+</form>
+<i *ngIf="submitted" class="material-icons">done</i>
+<i class="material-icons" (click)="activeModal.close()">close</i>
