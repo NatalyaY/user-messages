@@ -1,9 +1,11 @@
-import { ApplicationRef, Component, createComponent, EnvironmentInjector } from '@angular/core';
+import { ApplicationRef, Component, createComponent, ElementRef, EnvironmentInjector, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RestService, Message } from './../rest.service';
 import tableColumns from 'src/assets/tableColumns';
 import { MessageTableCellComponent } from './../message-table-cell/message-table-cell.component';
 import { TableColumsPropsService } from './../table-colums-props.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { RemoveModalComponent } from './../remove-modal/remove-modal.component';
 
 @Component({
     selector: 'app-message-table',
@@ -27,7 +29,9 @@ export class MessageTableComponent {
         private columnsService: TableColumsPropsService,
         private router: Router,
         private appRef: ApplicationRef,
-        private injector: EnvironmentInjector
+        private injector: EnvironmentInjector,
+        private modalService: NgbModal,
+        private eRef: ElementRef
     ) { }
 
     ngOnInit() {
@@ -49,6 +53,14 @@ export class MessageTableComponent {
         }
     }
 
+    @HostListener('document:click', ['$event'])
+    clickedOut(e: MouseEvent) {
+        const target = (e.target as HTMLElement);
+        if ((!target.closest('tr') || target.closest('th')) && this.selectedId) {
+            this.showMessageDetails(undefined);
+        }
+    }
+
     trackByItems(index: number, item: this['tableColumns'][number]) {
         return item.key;
     }
@@ -57,7 +69,8 @@ export class MessageTableComponent {
         return item.id;
     }
 
-    showMessageDetails(id: Message['id']) {
+    showMessageDetails(e?: MouseEvent, id?: Message['id']) {
+        e && e.stopPropagation();
         this.router.navigate(
             [],
             {
@@ -81,19 +94,8 @@ export class MessageTableComponent {
 
     removeMessage(e: MouseEvent, id: Message['id']) {
         e.stopPropagation();
-        this.restService.removeMessage(id).subscribe(_ => {
-            const params = this.route.snapshot.queryParams;
-            const selectedId = params['selectedId'];
-            if (selectedId == id) {
-                this.router.navigate(
-                    [],
-                    {
-                        relativeTo: this.route,
-                        queryParams: { selectedId: undefined },
-                        queryParamsHandling: 'merge',
-                    });
-            }
-        });
+        const modalRef = this.modalService.open(RemoveModalComponent, { centered: true });
+        modalRef.componentInstance.id = id;
     }
 
     saveCellData(data: string | number, type: keyof Message, hostElement: HTMLElement) {

@@ -1,0 +1,9 @@
+<div>
+    <ng-container *ngIf="!submitted">
+        <h3>Удалить сообщение с id {{id}}?</h3>
+        <button (click)="onSubmit()">Удалить</button>
+        <button (click)="activeModal.close()">Отменить</button>
+    </ng-container>
+    <i *ngIf="submitted" class="material-icons">done</i>
+    <i class="material-icons" (click)="activeModal.close()">close</i>
+</div>

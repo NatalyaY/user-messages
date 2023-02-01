@@ -1,0 +1,14 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!submitted">
+    <label for="nickname">Ник пользователя</label>
+    <input name="nickname" id="nickname" formControlName="nickname">
+        <label for="date">Дата</label>
+        <input id="date" class="form-control" placeholder="yyyy-mm-dd" formControlName="date" name="date" ngbDatepicker #dp="ngbDatepicker" />
+        <button class="btn btn-outline-secondary bi bi-calendar3" (click)="dp.toggle()" type="button"></button>
+        <ngb-timepicker formControlName="time" [size]="'small'"></ngb-timepicker>
+    <label for="message">Текст сообщения</label>
+    <textarea name="message" id="message" formControlName="message"></textarea>
+    <button class="button" type="submit" [disabled]="form.invalid || form.pristine">{{submitting ? 'Обновляем данные...'
+        : 'Сохранить'}}</button>
+</form>
+<i *ngIf="submitted" class="material-icons">done</i>
+<i class="material-icons" (click)="activeModal.close()">close</i>

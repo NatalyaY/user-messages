@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RestService, Message } from './../rest.service';
 import { TableColumsPropsService } from './../table-colums-props.service';
+import { EditModalComponent } from './../edit-modal/edit-modal.component';
 
 @Component({
     selector: 'app-message-details',
@@ -21,6 +23,7 @@ export class MessageDetailsComponent {
         private restService: RestService,
         private router: Router,
         private columnsService: TableColumsPropsService,
+        private modalService: NgbModal
     ) { }
 
 
@@ -49,8 +52,10 @@ export class MessageDetailsComponent {
         );
     }
 
-    edit(id: Message['id']) {
-        this.restService.editMessage(id, 'test').subscribe();
+    edit(message: Message) {
+        const modalRef = this.modalService.open(EditModalComponent, { centered: true });
+        modalRef.componentInstance.messageText = message.message;
+        modalRef.componentInstance.id = message.id;
     }
 
 }

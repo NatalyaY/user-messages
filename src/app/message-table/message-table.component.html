@@ -13,7 +13,7 @@
     <tbody>
         <ng-container *ngIf="!tableLoading">
             <tr *ngFor="let message of messages; trackBy: trackByMessages; let i = index"
-                (click)="showMessageDetails(message.id)" [class]="selectedId == message.id ? 'selected' : ''"
+                (click)="showMessageDetails($event, message.id)" [class]="selectedId == message.id ? 'selected' : ''"
                 (mouseenter)="setHoveredRowIndex(i)" (mouseleave)="removeHoveredRowIndex()">
                 <td style="min-width: 24px; background-color: white !important;">
                     <i class="material-icons" (click)="removeMessage($event, message.id)"
