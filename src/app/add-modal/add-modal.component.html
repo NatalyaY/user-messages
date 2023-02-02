@@ -1,14 +1,37 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!submitted">
-    <label for="nickname">Ник пользователя</label>
-    <input name="nickname" id="nickname" formControlName="nickname">
-        <label for="date">Дата</label>
-        <input id="date" class="form-control" placeholder="yyyy-mm-dd" formControlName="date" name="date" ngbDatepicker #dp="ngbDatepicker" />
-        <button class="btn btn-outline-secondary bi bi-calendar3" (click)="dp.toggle()" type="button"></button>
-        <ngb-timepicker formControlName="time" [size]="'small'"></ngb-timepicker>
-    <label for="message">Текст сообщения</label>
-    <textarea name="message" id="message" formControlName="message"></textarea>
-    <button class="button" type="submit" [disabled]="form.invalid || form.pristine">{{submitting ? 'Обновляем данные...'
-        : 'Сохранить'}}</button>
-</form>
-<i *ngIf="submitted" class="material-icons">done</i>
-<i class="material-icons" (click)="activeModal.close()">close</i>
+<div class="modalContent">
+    <h2>Добавить сообщение</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!submitted">
+        <label>
+            Ник пользователя:
+            <input name="username" id="username" formControlName="username">
+        </label>
+        <label>
+            Дата:
+            <div class="datepickerContainer">
+                <input id="date" class="form-control" placeholder="yyyy-mm-dd" formControlName="date" name="date"
+                    ngbDatepicker #dp="ngbDatepicker" />
+                <button class="btn datepickerBtn" (click)="dp.toggle()" type="button">
+                    <i class="material-icons">
+                        calendar_month
+                    </i>
+                </button>
+            </div>
+        </label>
+        <div class="label">
+            Время:
+            <ngb-timepicker formControlName="time" [size]="'small'"></ngb-timepicker>
+        </div>
+        <label for="message">
+            Текст сообщения:
+            <textarea name="message" id="message" formControlName="message"></textarea>
+        </label>
+        <div class="modalContent__btnContainer">
+            <button class="btn btn--accent " [class]="submitting ? 'btn--neutral' : 'btn--accent'"
+                [disabled]="form.invalid || form.pristine">
+                {{submitting ? 'Обновляем данные...' : 'Добавить сообщение'}}
+            </button>
+        </div>
+    </form>
+    <i *ngIf="submitted" class="successIcon material-icons">done</i>
+    <i class="closeIcon material-icons" (click)="activeModal.close()">close</i>
+</div>

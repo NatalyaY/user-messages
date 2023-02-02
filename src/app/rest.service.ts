@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Subject, Subscription, tap } from 'rxjs';
+import { Subject, Subscription, tap, Observable, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 
 export interface Message {
@@ -14,9 +14,7 @@ export type PostMessage = Omit<Message, 'id'>
 
 export type pagination = ReturnType<typeof getPaginationFromHeader> | null;
 
-function getPaginationFromHeader(header: string | null) {
-    if (!header) return null;
-
+function parsePaginationFromHeader(header: string) {
     const pagination = header.split(', ')
         .map(link => link.split('; '))
         .reduce((acc, [link, rel]) => {
@@ -52,6 +50,14 @@ function getPaginationFromHeader(header: string | null) {
         delete pagination['next'];
     }
 
+    return pagination;
+}
+
+function getPaginationFromHeader(header: string | null) {
+    if (!header) return null;
+
+    const pagination = parsePaginationFromHeader(header);
+
     const divider = { params: { _page: '...', _limit: pagination['first'].params._limit }, active: false };
     const paginationPages = [
         pagination['first'],
@@ -61,6 +67,30 @@ function getPaginationFromHeader(header: string | null) {
         pagination['last']
     ];
 
+    if (Object.keys(pagination).length < 5) {
+        if (!pagination['prev'] && !pagination['current']) {
+            paginationPages.splice(2, 0,
+                { ...divider, params: { ...divider.params, _page: 3 } },
+                { ...divider, params: { ...divider.params, _page: 4 } },
+                { ...divider, params: { ...divider.params, _page: 5 } },
+            );
+        } else if (pagination['next']) {
+            paginationPages.splice(3, 0,
+                { ...divider, params: { ...divider.params, _page: 4 } },
+                { ...divider, params: { ...divider.params, _page: 5 } },
+            );
+        } else {
+            paginationPages.splice(2, 0,
+                { ...divider, params: { ...divider.params, _page: pagination['prev'].params._page - 2 } },
+                { ...divider, params: { ...divider.params, _page: pagination['prev'].params._page - 1 } },
+            );
+            if (!pagination['current']) {
+                paginationPages.splice(2, 0,
+                    { ...divider, params: { ...divider.params, _page: pagination['prev'].params._page - 3 } },
+                );
+            }
+        }
+    }
     return paginationPages;
 }
 
@@ -69,12 +99,12 @@ function getPaginationFromHeader(header: string | null) {
 })
 export class RestService {
 
-    messages$ = new Subject<Message[]>();
+    messages$ = new BehaviorSubject<Message[]>([]);
     messagesLoading$ = new Subject<boolean>();
 
     pagination$ = new Subject<pagination>();
     defaultLimit = 10;
-    private paginationParams: number[] = [];
+    private paginationParams: pagination = null;
     private subscription$?: Subscription;
     private timer?: number;
 
@@ -103,22 +133,30 @@ export class RestService {
             });
             return;
         }
-        const { q } = this.route.snapshot.queryParams;
-        if (q) {
-            this.getSearchResults().subscribe();
-        } else {
-            this.getMessages().subscribe();
-        }
+        this.getMessages().subscribe();
     };
 
-    setMessagesAndPagination = (data: HttpResponse<Message[]>, _page: string, _limit: string, isSearched?: boolean) => {
-        const currentParams = [+_page, ...(_limit ? [+_limit] : [])];
-        if (JSON.stringify(this.paginationParams) !== JSON.stringify(currentParams) || isSearched) {
-            const linkHeader = data.headers.get('link');
-            const pagination = linkHeader ? getPaginationFromHeader(linkHeader) : null;
-            this.pagination$.next(pagination);
-            this.paginationParams = currentParams;
+    setMessagesAndPagination = (data: HttpResponse<Message[]>) => {
+        const linkHeader = data.headers.get('link');
+        const pagination = linkHeader ? getPaginationFromHeader(linkHeader) : null;
+        this.pagination$.next(pagination);
+        if (
+            !pagination ||
+            (this.paginationParams &&
+                pagination[pagination.length - 1].params._page
+                != this.paginationParams[this.paginationParams.length - 1].params._page
+            )
+        ) {
+            this.router
+                .navigate(
+                    [],
+                    {
+                        relativeTo: this.route,
+                        queryParams: { _page: pagination ? pagination[pagination.length - 1].params._page : 1 },
+                        queryParamsHandling: 'merge',
+                    }).then(() => this.getMessages().subscribe());
         }
+        this.paginationParams = pagination;
         data.body && this.messages$.next(data.body);
         this.messagesLoading$.next(false);
     };
@@ -130,20 +168,7 @@ export class RestService {
             url += `&q=${q}`;
         }
         return this.http.get<Message[]>(url, { observe: 'response' }).pipe(
-            tap(data => {
-                if (!data.body?.length && _page) {
-                    this.router
-                        .navigate(
-                            [],
-                            {
-                                relativeTo: this.route,
-                                queryParams: { _page: undefined },
-                                queryParamsHandling: 'merge',
-                            }).then(() => this.getMessages().subscribe());
-                } else {
-                    this.setMessagesAndPagination(data, _page, _limit);
-                }
-            })
+            tap(this.setMessagesAndPagination)
         );
     }
 
@@ -166,7 +191,7 @@ export class RestService {
         this.messagesLoading$.next(true);
         const { _page, _limit, q } = this.route.snapshot.queryParams;
         return this.http.get<Message[]>(`/messages?q=${q}&_page=${+_page || 1}&_limit=${+_limit || this.defaultLimit}`, { observe: 'response' }).pipe(
-            tap(data => this.setMessagesAndPagination(data, '1', _limit, true))
+            tap(this.setMessagesAndPagination)
         );
     }
 }

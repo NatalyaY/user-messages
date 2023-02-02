@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PostMessage, RestService } from './../rest.service';
+import { RestService } from './../rest.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -12,6 +12,8 @@ import { AddModalComponent } from './../add-modal/add-modal.component';
 })
 export class HeaderComponent {
     control!: FormControl;
+    matchQuery = window.matchMedia('(min-width:600px)');
+    isDesktop = this.matchQuery.matches;
 
     constructor(
         private route: ActivatedRoute,
@@ -21,13 +23,22 @@ export class HeaderComponent {
         private modalService: NgbModal
     ) { }
 
-    ngOnInit(): void {
+    ngOnInit() {
         this.route.queryParams.subscribe(params => {
             this.control = this.formBuilder.control({
                 value: params['q'], disabled: false
             });
         });
+        this.matchQuery.addEventListener('change', this.changeIsDesktop);
     }
+
+    ngOnDestroy() {
+        this.matchQuery.removeEventListener('change', this.changeIsDesktop);
+    }
+
+    changeIsDesktop = (e: MediaQueryListEvent) => {
+        this.isDesktop = e.matches;
+    };
 
     add() {
         this.modalService.open(AddModalComponent, { centered: true });

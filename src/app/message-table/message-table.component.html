@@ -1,33 +1,41 @@
-<table style="border-spacing: 0px;">
-    <thead>
-        <tr>
-            <th>
-            </th>
-            <ng-container *ngFor="let col of tableColumns; trackBy: trackByItems">
-                <th [style]="col.style">
-                    {{col.label}}
+<section class="wrapper tableWrapper">
+    <table class="messagesTable">
+        <thead>
+            <tr>
+                <th>
                 </th>
-            </ng-container>
-        </tr>
-    </thead>
-    <tbody>
-        <ng-container *ngIf="!tableLoading">
-            <tr *ngFor="let message of messages; trackBy: trackByMessages; let i = index"
-                (click)="showMessageDetails($event, message.id)" [class]="selectedId == message.id ? 'selected' : ''"
-                (mouseenter)="setHoveredRowIndex(i)" (mouseleave)="removeHoveredRowIndex()">
-                <td style="min-width: 24px; background-color: white !important;">
-                    <i class="material-icons" (click)="removeMessage($event, message.id)"
-                        [style.visibility]="hoveredRowIndex != i && !shouldShowDeleteBtn ? 'hidden' : 'visible'">delete</i>
-                </td>
-                <ng-container *ngFor="let col of tableColumns; trackBy: trackByItems;">
-                    <td #ref [style]="col.style" [class]="col.key"
-                        [appGenerateCell]="{data: message[col.key], type: col.key, hostElement: ref}">
-                    </td>
+                <ng-container *ngFor="let col of tableColumns; trackBy: trackByItems">
+                    <th [style]="col.style">
+                        {{col.label}}
+                    </th>
                 </ng-container>
             </tr>
-        </ng-container>
-        <ng-container *ngIf="tableLoading">
-            <p>Загружаем данные...</p>
-        </ng-container>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <ng-container *ngIf="!tableLoading">
+                <ng-container *ngIf="!messages.length">
+                    <p class="messagesTable__placeholder messagesTable__placeholder--withIcon"><i class="material-icons">info</i>Ничего не нашлось...</p>
+                </ng-container>
+                <ng-container *ngIf="messages.length">
+                    <tr *ngFor="let message of messages; trackBy: trackByMessages; let i = index"
+                        (click)="showMessageDetails($event, message.id)"
+                        [class]="selectedId == message.id ? 'selected' : ''" (mouseenter)="setHoveredRowIndex(i)"
+                        (mouseleave)="removeHoveredRowIndex()">
+                        <td class="messagesTable__deleteCell">
+                            <i class="material-icons" (click)="removeMessage($event, message.id)"
+                                [style.visibility]="hoveredRowIndex != i && !shouldShowDeleteBtn ? 'hidden' : 'visible'">delete</i>
+                        </td>
+                        <ng-container *ngFor="let col of tableColumns; trackBy: trackByItems;">
+                            <td #ref [style]="col.style" [class]="col.key"
+                                [appGenerateCell]="{data: message[col.key], type: col.key, hostElement: ref}">
+                            </td>
+                        </ng-container>
+                    </tr>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="tableLoading">
+                <i class="messagesTable__loadingIcon material-icons">autorenew</i>
+            </ng-container>
+        </tbody>
+    </table>
+</section>

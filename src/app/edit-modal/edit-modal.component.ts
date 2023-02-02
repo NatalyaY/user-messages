@@ -33,9 +33,9 @@ export class EditModalComponent {
         this.form = this.formBuilder.group({
             message: new FormControl(
                 this.messageText,
-                Validators.required
+                Validators.compose([Validators.required, this.validator.validate])
             ),
-        }, { validators: [this.validator.validate] } as AbstractControlOptions);
+        });
     }
 
     onSubmit() {

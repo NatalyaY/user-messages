@@ -1,4 +1,14 @@
-<form (ngSubmit)="onSubmit()" *ngIf="control">
-    <input [formControl]="control" placeholder="search in table">
-</form>
-<button (click)="add()">add</button>
+<div class="container header">
+    <form class="header__form" (ngSubmit)="onSubmit()" *ngIf="control">
+        <label class="header__form__label">
+            <input class="header__form__label__input" [formControl]="control" placeholder="search in table">
+            <i (click)="onSubmit()" class="material-icons header__form__label__icon">search</i>
+        </label>
+    </form>
+    <div class="header__addBtnContainer">
+        <button class="btn btn--accent addBtnContainer__btn" (click)="add()">
+            {{isDesktop ? 'Добавить сообщение' : ''}}
+            <i *ngIf="!isDesktop" class="material-icons addBtnContainer__btn--icon">add</i>
+        </button>
+    </div>
+</div>

@@ -18,7 +18,7 @@ export class MessageTableCellComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        if (this.type == 'message' && this.data.length > 100) {
+        if (this.type == 'message' && this.data?.length > 100) {
             this.content = this.data.slice(0, 101) + '...';
         } else {
             this.content = this.data;
@@ -26,13 +26,15 @@ export class MessageTableCellComponent implements OnInit {
         this.route.queryParams.subscribe(params => {
             if (typeof this.content == 'number') return;
             const q = params['q'];
-            this.content = this.content
+            this.content = (this.content || '')
                 .replaceAll('<span class="highlight">', '')
-                .replaceAll('</span>', '')
-                .replace(
+                .replaceAll('</span>', '');
+            if (q) {
+                this.content = this.content.replace(
                     new RegExp(q, 'gi'),
                     (match: string) => '<span class="highlight">' + match + '</span>'
                 );
+            }
         });
     }
 

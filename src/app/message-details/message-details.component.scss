@@ -1,0 +1,24 @@
+@use '../../_variables.scss' as *;
+
+:host {
+    display: block;
+    height: 100%;
+
+    .messageDetails {
+        padding: 20px;
+        background-color: $content-color;
+        border-radius: 8px;
+
+        &__btn {
+            margin: 20px 0;
+        }
+
+        &__loadingIcon {
+            display: block;
+            margin: 0 auto;
+            width: fit-content;
+            font-size: 2em;
+            animation: rotate 2s infinite linear;
+        }
+    }
+}

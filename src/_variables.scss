@@ -1,0 +1,28 @@
+//breakpoints
+$mobile: 600px;
+$tablet: 768px;
+$desk: 1200px;
+
+//colors
+$accent: #2967a1;
+$accent-transparent: #315678;
+$error: #F05454;
+$highlight: #ff8300;
+$background-color: #222831;
+$content-color: #2C3440;
+$text-color: #F9F9F9;
+$border-color: rgba(249, 249, 249, 0.5);
+
+$transition-main: .2s;
+
+$base-font-size: 14px;
+
+:root {
+    --accent: #2967a1;
+    --accent-transparent: #315678;
+    --remove: #F05454;
+    --background-color: #222831;
+    --content-color: #2C3440;
+    --text-color: #F9F9F9;
+    --border-color: rgba(249, 249, 249, 0.5);
+}

@@ -1,7 +1,16 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!submitted">
-    <label for="message">Текст сообщения</label>
-    <textarea name="message" id="message" formControlName="message"></textarea>
-    <button class="button" type="submit" [disabled]="form.invalid || form.pristine">{{submitting ? 'Обновляем данные...' : 'Сохранить'}}</button>
-</form>
-<i *ngIf="submitted" class="material-icons">done</i>
-<i class="material-icons" (click)="activeModal.close()">close</i>
+<div class="modalContent">
+<h2>Изменить текст сообщения</h2>
+    <form #ref [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!submitted">
+        <label for="message">Сообщение:</label>
+        <textarea [rows]="messageText.length / (ref.getBoundingClientRect().width / 9)" name="message" id="message"
+            formControlName="message"></textarea>
+        <div class="modalContent__btnContainer">
+            <button class="btn btn--accent " [class]="submitting ? 'btn--neutral' : 'btn--accent'" type="submit"
+                [disabled]="form.invalid || form.pristine">
+                {{submitting ? 'Обновляем данные...' : 'Сохранить'}}
+            </button>
+        </div>
+    </form>
+    <i *ngIf="submitted" class="successIcon material-icons">done</i>
+    <i class="closeIcon material-icons" (click)="activeModal.close()">close</i>
+</div>
