@@ -1,11 +1,10 @@
-import { ApplicationRef, Component, createComponent, ElementRef, EnvironmentInjector, HostListener } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RestService, Message } from './../rest.service';
-import tableColumns from 'src/assets/tableColumns';
-import { MessageTableCellComponent } from './../message-table-cell/message-table-cell.component';
 import { TableColumsPropsService } from './../table-colums-props.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { RemoveModalComponent } from './../remove-modal/remove-modal.component';
+import { MessageDetailsComponent } from './../message-details/message-details.component';
 
 @Component({
     selector: 'app-message-table',
@@ -13,6 +12,8 @@ import { RemoveModalComponent } from './../remove-modal/remove-modal.component';
     styleUrls: ['./message-table.component.scss']
 })
 export class MessageTableComponent {
+
+    @Input() isDesktop!: boolean;
 
     messages!: Message[];
     tableLoading?: boolean;
@@ -28,29 +29,23 @@ export class MessageTableComponent {
         private restService: RestService,
         private columnsService: TableColumsPropsService,
         private router: Router,
-        private appRef: ApplicationRef,
-        private injector: EnvironmentInjector,
         private modalService: NgbModal,
-        private eRef: ElementRef
+        private offcanvasService: NgbOffcanvas
     ) { }
 
     ngOnInit() {
         this.tableColumns = this.columnsService.tableColumns;
         this.route.queryParams.subscribe(params => {
             this.selectedId = params['selectedId'];
+            if (!params['selectedId']) {
+                this.offcanvasService.dismiss();
+            }
         });
         this.restService.messages$.subscribe(data => this.messages = data);
         this.restService.messagesLoading$.subscribe(data => this.tableLoading = data);
 
         this.restService.getActualMessages();
         this.matchQuery.addEventListener('change', this.showRemoveBtnsOnMobile);
-    }
-
-    ngAfterViewChecked() {
-        if (this.cellData.length) {
-            this.cellData.forEach(data => this.createCell(...data));
-            this.cellData = [];
-        }
     }
 
     @HostListener('document:click', ['$event'])
@@ -78,6 +73,9 @@ export class MessageTableComponent {
                 queryParams: { selectedId: id },
                 queryParamsHandling: 'merge',
             });
+        if (!this.isDesktop && id !== undefined) {
+            this.offcanvasService.open(MessageDetailsComponent);
+        }
     }
 
     setHoveredRowIndex(rowIndex: number) {
@@ -96,27 +94,6 @@ export class MessageTableComponent {
         e.stopPropagation();
         const modalRef = this.modalService.open(RemoveModalComponent, { centered: true });
         modalRef.componentInstance.id = id;
-    }
-
-    saveCellData(data: string | number, type: keyof Message, hostElement: HTMLElement) {
-        if (hostElement.childElementCount) return;
-        const existingDataIndex = this.cellData.findIndex(data => data[2] == hostElement);
-        if (existingDataIndex != -1) {
-            this.cellData[existingDataIndex] = [data, type, hostElement];
-        } else {
-            this.cellData.push([data, type, hostElement]);
-        }
-    }
-
-    createCell(data: string | number, type: keyof Message, hostElement: HTMLElement) {
-        const cellRef = createComponent(MessageTableCellComponent, {
-            environmentInjector: this.injector,
-            hostElement
-        });
-        cellRef.instance.data = data;
-        cellRef.instance.type = type;
-
-        this.appRef.attachView(cellRef.hostView);
     }
 
 }

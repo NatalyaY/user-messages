@@ -6,5 +6,14 @@ import { Component } from '@angular/core';
     styleUrls: ['./main.component.scss']
 })
 export class MainComponent {
+    matchQuery = window.matchMedia('(min-width:1024px)');
+    isDesktop = this.matchQuery.matches;
 
+    ngOnInit() {
+        this.matchQuery.addEventListener('change', this.open);
+    }
+
+    open = (e: MediaQueryListEvent) => {
+        this.isDesktop = e.matches;
+    };
 }

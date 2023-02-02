@@ -32,7 +32,11 @@ export class MessageDetailsComponent {
         this.route.queryParams.subscribe(params => {
             this.selectedId = params['selectedId'];
             this.isSelected = params['selectedId'] ? true : false;
-            this.message = this.messages?.find(msg => msg.id == this.selectedId);
+            if (!this.messages) {
+                this.restService.getActualMessages();
+                return;
+            }
+            this.message = this.messages.find(msg => msg.id == this.selectedId);
         });
         this.restService.messages$.subscribe(data => {
             this.messages = data;
