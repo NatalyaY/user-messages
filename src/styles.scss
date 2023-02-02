@@ -1,61 +1,57 @@
-@import 'bootstrap/scss/bootstrap';
+@use 'variables' as *;
+@import "normalize-scss/sass/normalize/import-now";
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+@mixin buttonVariant($color) {
+    background-color: $color;
+
+    &:not(:disabled):hover {
+        background-color: lighten($color, .3);
+    }
+}
 
 html,
 body {
-    overflow-x: hidden;
-    min-height: 100%;
+    height: 100%;
     min-width: 320px;
+    overflow: hidden;
 }
 
 body {
     font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
     font-weight: 400;
+    color: $text-color;
+    background-color: $background-color;
 }
 
-.selected {
-    background-color: yellow;
+* {
+    box-sizing: border-box;
+}
 
-    & td {
-        background-color: inherit !important;
-        color: black !important;
+button {
+    font-family: inherit;
+    color: inherit;
+    border: 0;
+    outline: 0;
+
+    &:disabled {
+        opacity: .4;
+        cursor: not-allowed;
     }
 }
 
-.tableContainer {
-    max-width: 100%;
+textarea,
+input,
+select {
+    border: 0;
+    outline: 0;
+    padding: 10px;
+    font-family: inherit;
 }
 
-table {
-    display: block;
-    max-width: 100%;
-    overflow-x: auto;
-
-    & p {
-        margin-bottom: 0;
-    }
-}
-
-tr {
-    position: relative;
-    border-bottom: 1px solid var(--bs-gray-500);
-}
-
-.message {
-    word-break: break-all;
-}
-
-td {
-    padding: 15px;
-}
-
-.highlight {
-    background-color: red;
-}
-
-.currentPage {
-    background-color: red;
+fieldset {
+    border: 0;
+    outline: 0;
 }
 
 .container {
@@ -73,36 +69,354 @@ td {
     }
 }
 
-@media (max-width: 600px) {
+.wrapper {
+    max-height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: $accent $text-color;
 
-    th,
-    td {
-        display: block;
-        padding-bottom: 0;
-        padding-top: 0;
+    &::-webkit-scrollbar {
+        width: 24px;
     }
 
-    tr td:first-of-type {
+    &::-webkit-scrollbar-track {
+        background: $text-color;
+        background-clip: content-box;
+        border-left: 20px solid transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $accent;
+        background-clip: content-box;
+        border-left: 20px solid transparent;
+    }
+}
+
+.modalContent {
+    padding: 20px;
+    text-align: center;
+
+    h2 {
+        margin-bottom: 40px;
+    }
+
+    &__btnContainer {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+
+        button {
+            flex: 1;
+        }
+    }
+
+    & form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20px;
+
+        label,
+        .label {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+
+        }
+
+        input,
+        textarea {
+            background-color: #ffffff36;
+            color: $text-color;
+            flex: 0 1 50%;
+            min-width: 0;
+
+            @media (max-width: 600px) {
+                flex: 1 1 100%;
+            }
+
+            &.ng-invalid:not(.ng-pristine) {
+                border-left: 3px solid $error;
+            }
+
+            &.ng-valid:not(.ng-pristine) {
+                border-left: 4px solid #3b723b;
+            }
+        }
+    }
+
+    .datepickerContainer {
+        position: relative;
+        flex: 0 1 50%;
+
+        @media (max-width: 600px) {
+            flex: 1 1 100%;
+        }
+
+        .dropdown-menu.show {
+            background-color: #bebebe;
+            z-index: 1100;
+
+            select {
+                background-color: transparent;
+            }
+
+            .ngb-dp-header,
+            .ngb-dp-weekdays {
+                background-color: #d6d6d6;
+                color: $accent;
+            }
+        }
+
+        input {
+            width: 100%;
+        }
+    }
+
+    .datepickerBtn {
         position: absolute;
-        top: 15px;
         right: 0;
-        height: 40px;
+        top: 0;
+        height: 100%;
+        width: fit-content;
+        padding: 0 5px;
+        color: #000;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        opacity: .5;
         display: flex;
         align-items: center;
         justify-content: center;
+
+        i {
+            font-size: 1.3em;
+        }
+    }
+}
+
+.btn {
+    padding: 10px 25px;
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+    transition: $transition-main;
+    font-weight: 600;
+
+    &:not(:disabled):hover {
+        opacity: .9;
     }
 
-    tr td:nth-child(2) {
-        margin-top: 15px;
+    &--accent {
+        @include buttonVariant($accent);
     }
 
-    tr td:last-child {
-        margin-bottom: 15px;
+    &--neutral {
+        @include buttonVariant($border-color);
     }
 
-    td.message {
-        padding-top: 15px;
-        padding-bottom: 15px;
+    &--error {
+                @include buttonVariant($error);
+    }
+}
+
+.selected {
+    background-color: #3c4b58;
+
+    & td {
+        background-color: inherit !important;
+        color: white !important;
+    }
+}
+
+.highlight {
+    background-color: $highlight;
+    padding: 2px;
+}
+
+.currentPage {
+    background-color: $highlight;
+}
+
+.closeIcon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.successIcon {
+    color: #3b723b;
+    font-size: 3em;
+}
+
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
     }
 
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/*
+*
+* Bootstrap overrides
+*
+*/
+
+.offcanvas {
+    position: fixed;
+    bottom: 0;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    max-width: 90%;
+    visibility: hidden;
+    background-color: $content-color;
+    background-clip: padding-box;
+    outline: 0;
+    transition: transform 0.3s ease-in-out;
+
+    &.offcanvas-start {
+        top: 0;
+        left: 0;
+        width: 400px;
+        transform: translateX(-100%);
+    }
+
+    &.showing,
+    &.hiding,
+    &.show {
+        visibility: visible;
+    }
+
+    &.showing,
+    &.show:not(.hiding) {
+        transform: none;
+    }
+
+    &-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+
+        &.fade {
+            opacity: 0;
+        }
+
+        &.show {
+            opacity: 0.5;
+        }
+    }
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1055;
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+
+    &-backdrop {
+        @extend .offcanvas-backdrop
+    }
+
+    &-dialog {
+        position: relative;
+        width: fit-content;
+        min-width: min(90%, 400px);
+        max-width: min(90%, 500px);
+        height: 100%;
+        display: flex;
+        align-items: center;
+        margin: 0 auto;
+        pointer-events: none;
+
+        .fade & {
+            transition: transform 0.3s ease-out;
+            transform: translate(0, -50px);
+        }
+
+        .show & {
+            transform: none;
+        }
+    }
+
+    &-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-height: 90%;
+        overflow-y: auto;
+        pointer-events: auto;
+        background-color: $content-color;
+        border-radius: 8px;
+        outline: 0;
+    }
+}
+
+.fade {
+    transition: opacity 0.15s linear;
+
+    &:not(.show) {
+        opacity: 0;
+    }
+}
+
+.ngb-tp-hour,
+.ngb-tp-minute,
+.ngb-tp-second,
+.ngb-tp-meridian {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+
+    .btn {
+        background-color: transparent;
+    }
+
+    .form-control {
+        width: 100%;
+    }
+}
+
+.ngb-tp-input-container {
+    width: 4em;
+}
+
+.d-block {
+    display: block !important;
+}
+
+.visually-hidden,
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }

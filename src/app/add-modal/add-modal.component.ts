@@ -34,11 +34,11 @@ export class AddModalComponent {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            nickname: new FormControl('', Validators.required),
+            username: new FormControl('', Validators.compose([Validators.required, this.validator.validate])),
             date: new FormControl('', Validators.required),
             time: new FormControl('', Validators.required),
-            message: new FormControl('', Validators.required),
-        }, { validators: [this.validator.validate] } as AbstractControlOptions);
+            message: new FormControl('', Validators.compose([Validators.required, this.validator.validate])),
+        });
     }
 
     onSubmit() {

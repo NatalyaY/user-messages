@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveOffcanvas, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RestService, Message } from './../rest.service';
 import { TableColumsPropsService } from './../table-colums-props.service';
 import { EditModalComponent } from './../edit-modal/edit-modal.component';
+import { Injector } from '@angular/core';  
 
 @Component({
     selector: 'app-message-details',
@@ -12,32 +13,30 @@ import { EditModalComponent } from './../edit-modal/edit-modal.component';
 })
 export class MessageDetailsComponent {
 
+    @Input() isOffCanvas?: boolean;
+
     selectedId?: number;
     isSelected?: boolean;
     message?: Message;
     messages?: Message[];
     tableColumns!: TableColumsPropsService['tableColumns'];
+    activeCanvas?: NgbActiveOffcanvas;
 
     constructor(
         private route: ActivatedRoute,
         private restService: RestService,
         private router: Router,
         private columnsService: TableColumsPropsService,
-        private modalService: NgbModal
-    ) { }
+        private modalService: NgbModal,
+        private injector: Injector
+    ) {}
 
 
     ngOnInit() {
+        if (this.isOffCanvas) {
+            this.activeCanvas = <NgbActiveOffcanvas>this.injector.get(NgbActiveOffcanvas);
+        }
         this.tableColumns = this.columnsService.tableColumns;
-        this.route.queryParams.subscribe(params => {
-            this.selectedId = params['selectedId'];
-            this.isSelected = params['selectedId'] ? true : false;
-            if (!this.messages) {
-                this.restService.getActualMessages();
-                return;
-            }
-            this.message = this.messages.find(msg => msg.id == this.selectedId);
-        });
         this.restService.messages$.subscribe(data => {
             this.messages = data;
             if (!this.selectedId) return;
@@ -54,9 +53,18 @@ export class MessageDetailsComponent {
             }
         }
         );
+        this.route.queryParams.subscribe(params => {
+            this.selectedId = params['selectedId'];
+            this.isSelected = params['selectedId'] ? true : false;
+            if (!this.messages) {
+                this.restService.getActualMessages();
+                return;
+            }
+            this.message = this.messages.find(msg => msg.id == this.selectedId);
+        });
     }
 
-    edit(message: Message) {
+    editMessage(message: Message) {
         const modalRef = this.modalService.open(EditModalComponent, { centered: true });
         modalRef.componentInstance.messageText = message.message;
         modalRef.componentInstance.id = message.id;

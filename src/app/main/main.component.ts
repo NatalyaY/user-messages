@@ -13,6 +13,10 @@ export class MainComponent {
         this.matchQuery.addEventListener('change', this.open);
     }
 
+    ngOnDestroy() {
+        this.matchQuery.removeEventListener('change', this.open);
+    }
+
     open = (e: MediaQueryListEvent) => {
         this.isDesktop = e.matches;
     };

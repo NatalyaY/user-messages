@@ -1,0 +1,22 @@
+:host {
+    height: 100%;
+}
+
+.main {
+    display: flex;
+    gap: 36px;
+    height: 100%;
+    padding-bottom: 20px;
+
+    &__tableSection {
+        flex: 1 1 70%;
+        display: flex;
+        gap: 20px;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    &__detailsSection {
+        flex: 1 1 30%;
+    }
+}

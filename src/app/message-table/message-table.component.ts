@@ -2,7 +2,7 @@ import { Component, HostListener, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RestService, Message } from './../rest.service';
 import { TableColumsPropsService } from './../table-colums-props.service';
-import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbOffcanvas, NgbOffcanvasRef } from '@ng-bootstrap/ng-bootstrap';
 import { RemoveModalComponent } from './../remove-modal/remove-modal.component';
 import { MessageDetailsComponent } from './../message-details/message-details.component';
 
@@ -23,6 +23,7 @@ export class MessageTableComponent {
     hoveredRowIndex?: number;
     matchQuery = window.matchMedia('(hover: none)');
     shouldShowDeleteBtn = this.matchQuery.matches;
+    private activeOffcanvas?: NgbOffcanvasRef;
 
     constructor(
         private route: ActivatedRoute,
@@ -37,8 +38,11 @@ export class MessageTableComponent {
         this.tableColumns = this.columnsService.tableColumns;
         this.route.queryParams.subscribe(params => {
             this.selectedId = params['selectedId'];
-            if (!params['selectedId']) {
-                this.offcanvasService.dismiss();
+            if (!params['selectedId'] && this.activeOffcanvas) {
+                this.activeOffcanvas.close();
+                this.activeOffcanvas = undefined;
+            } else if (!this.activeOffcanvas) {
+                this.showMessageDetails(undefined, params['selectedId']);
             }
         });
         this.restService.messages$.subscribe(data => this.messages = data);
@@ -48,11 +52,22 @@ export class MessageTableComponent {
         this.matchQuery.addEventListener('change', this.showRemoveBtnsOnMobile);
     }
 
+    ngOnDestroy() {
+        this.matchQuery.removeEventListener('change', this.showRemoveBtnsOnMobile);
+        this.restService.messages$.unsubscribe();
+        this.restService.messagesLoading$.unsubscribe();
+    }
+
     @HostListener('document:click', ['$event'])
     clickedOut(e: MouseEvent) {
         const target = (e.target as HTMLElement);
-        if ((!target.closest('tr') || target.closest('th')) && this.selectedId) {
-            this.showMessageDetails(undefined);
+        if (
+            (!target.closest('tr') || target.closest('th'))
+            && this.selectedId
+            && !target.closest('.messageDetails')
+            && !target.closest('.modal')
+        ) {
+            this.showMessageDetails();
         }
     }
 
@@ -65,16 +80,19 @@ export class MessageTableComponent {
     }
 
     showMessageDetails(e?: MouseEvent, id?: Message['id']) {
-        e && e.stopPropagation();
-        this.router.navigate(
-            [],
-            {
-                relativeTo: this.route,
-                queryParams: { selectedId: id },
-                queryParamsHandling: 'merge',
-            });
+        if (e) {
+            e && e.stopPropagation();
+            this.router.navigate(
+                [],
+                {
+                    relativeTo: this.route,
+                    queryParams: { selectedId: id },
+                    queryParamsHandling: 'merge',
+                });
+        }
         if (!this.isDesktop && id !== undefined) {
-            this.offcanvasService.open(MessageDetailsComponent);
+            this.activeOffcanvas = this.offcanvasService.open(MessageDetailsComponent);
+            this.activeOffcanvas.componentInstance.isOffCanvas = true;
         }
     }
 

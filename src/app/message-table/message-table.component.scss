@@ -1,0 +1,120 @@
+@use '../../_variables.scss' as *;
+
+:host {
+
+    min-height: 0;
+    flex: 1;
+    background-color: $content-color;
+    padding: 20px;
+    border-radius: 8px;
+
+    .tableWrapper {
+        height: 100%;
+    }
+
+    .messagesTable {
+        border-collapse: collapse;
+        border-spacing: 0px;
+        height: 100%;
+        width: 100%;
+
+        &__deleteCell {
+            background-color: transparent !important;
+
+            & i {
+                cursor: pointer;
+                color: $error;
+            }
+        }
+
+        &__placeholder {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+
+            &--withIcon {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+        }
+
+        &__loadingIcon {
+            @extend .messagesTable__placeholder;
+            animation: rotate 2s infinite linear;
+            font-size: 4em;
+        }
+
+        tbody {
+            position: relative;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+
+            th {
+                padding: 20px 0;
+                background-color: $content-color;
+
+                &:first-of-type {
+                    width: 54px;
+                }
+            }
+        }
+
+        tr {
+            position: relative;
+            border-bottom: 1px solid $border-color;
+        }
+
+        td {
+            padding: 10px 15px;
+            vertical-align: top;
+
+        }
+
+        @media (max-width: 600px) {
+
+            thead th,
+            td:not(&__deleteCell) {
+                display: block;
+                padding-bottom: 5px;
+                padding-top: 5px;
+            }
+
+            thead th:last-of-type {
+                padding-bottom: 15px;
+            }
+
+            &__deleteCell {
+                position: absolute;
+                top: 15px;
+                right: 0;
+                padding: 4px !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: white !important;
+                opacity: .7;
+                display: flex;
+            }
+
+            tr td:nth-child(2) {
+                margin-top: 15px;
+            }
+
+            tr td:last-child {
+                margin-bottom: 15px;
+            }
+
+            td.message {
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+
+        }
+    }
+}

@@ -1,0 +1,18 @@
+@use '../_variables' as *;
+
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 32px;
+
+    header {
+        background-color: $content-color;
+        flex: 0 0 auto;
+    }
+
+    main {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+}
