@@ -1,9 +1,9 @@
-<section style="display: flex; gap: 16px;">
-    <section style="flex: 1 1 70%">
-        <app-message-table />
+<section style="display: flex; gap: 16px;" class="container main">
+    <section style="flex: 1 1 70%" class="tableContainer">
+        <app-message-table [isDesktop]="isDesktop"/>
         <app-message-table-pagination/>
     </section>
-    <section style="flex: 1 1 30%">
+    <section style="flex: 1 1 30%" *ngIf="isDesktop">
         <app-message-details />
     </section>
 </section>

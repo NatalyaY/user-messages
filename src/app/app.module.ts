@@ -16,6 +16,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EditModalComponent } from './edit-modal/edit-modal.component';
 import { AddModalComponent } from './add-modal/add-modal.component';
 import { RemoveModalComponent } from './remove-modal/remove-modal.component';
+import { GenerateCellDirective } from './generate-cell.directive';
 
 @NgModule({
     declarations: [
@@ -30,6 +31,7 @@ import { RemoveModalComponent } from './remove-modal/remove-modal.component';
         EditModalComponent,
         AddModalComponent,
         RemoveModalComponent,
+        GenerateCellDirective,
     ],
     imports: [
         BrowserModule,

@@ -17,11 +17,11 @@
                 (mouseenter)="setHoveredRowIndex(i)" (mouseleave)="removeHoveredRowIndex()">
                 <td style="min-width: 24px; background-color: white !important;">
                     <i class="material-icons" (click)="removeMessage($event, message.id)"
-                        *ngIf="hoveredRowIndex == i || shouldShowDeleteBtn">delete</i>
+                        [style.visibility]="hoveredRowIndex != i && !shouldShowDeleteBtn ? 'hidden' : 'visible'">delete</i>
                 </td>
                 <ng-container *ngFor="let col of tableColumns; trackBy: trackByItems;">
-                    <td #ref [style]="col.style">
-                        {{saveCellData(message[col.key],col.key, ref)}}
+                    <td #ref [style]="col.style" [class]="col.key"
+                        [appGenerateCell]="{data: message[col.key], type: col.key, hostElement: ref}">
                     </td>
                 </ng-container>
             </tr>
