@@ -107,6 +107,7 @@ export class RestService {
     private paginationParams: pagination = null;
     private subscription$?: Subscription;
     private timer?: number;
+    private gotoLastPage?: boolean;
 
     httpOptions = {
         headers: new HttpHeaders({
@@ -121,6 +122,8 @@ export class RestService {
     ) { }
 
     getActualMessages = () => {
+        this.messagesLoading$.next(true);
+
         if (!this.route.component && !this.subscription$) {
             this.subscription$ = this.route.queryParams.subscribe(() => {
                 if (this.timer) return;
@@ -139,23 +142,32 @@ export class RestService {
     setMessagesAndPagination = (data: HttpResponse<Message[]>) => {
         const linkHeader = data.headers.get('link');
         const pagination = linkHeader ? getPaginationFromHeader(linkHeader) : null;
-        this.pagination$.next(pagination);
-        if (
-            !pagination ||
-            (this.paginationParams &&
-                pagination[pagination.length - 1].params._page
-                != this.paginationParams[this.paginationParams.length - 1].params._page
-            )
-        ) {
+
+        let changePageTo: number | string | undefined;
+        const currentPaginationLastPage = pagination && pagination[pagination.length - 1].params._page;
+        const lastPaginationLastPage = this.paginationParams && this.paginationParams[this.paginationParams.length - 1].params._page;
+
+        if (this.gotoLastPage && currentPaginationLastPage && !this.route.snapshot.queryParams['q']) {
+            changePageTo = currentPaginationLastPage;
+            this.gotoLastPage = undefined;
+        } else if (!pagination && this.route.snapshot.queryParams['_page']) {
+            changePageTo = lastPaginationLastPage ? +lastPaginationLastPage - 1 : 1;
+        }
+
+
+        if (changePageTo) {
             this.router
                 .navigate(
                     [],
                     {
                         relativeTo: this.route,
-                        queryParams: { _page: pagination ? pagination[pagination.length - 1].params._page : 1 },
+                        queryParams: { _page: changePageTo == 1 ? undefined : changePageTo },
                         queryParamsHandling: 'merge',
                     }).then(() => this.getMessages().subscribe());
+            return;
         }
+
+        this.pagination$.next(pagination);
         this.paginationParams = pagination;
         data.body && this.messages$.next(data.body);
         this.messagesLoading$.next(false);
@@ -168,7 +180,7 @@ export class RestService {
             url += `&q=${q}`;
         }
         return this.http.get<Message[]>(url, { observe: 'response' }).pipe(
-            tap(this.setMessagesAndPagination)
+            tap((data) => this.setMessagesAndPagination(data))
         );
     }
 
@@ -184,6 +196,7 @@ export class RestService {
 
     addMessage(message: PostMessage) {
         this.messagesLoading$.next(true);
+        this.gotoLastPage = true;
         return this.http.post('/messages', JSON.stringify(message), this.httpOptions).pipe(tap(this.getActualMessages));
     }
 
